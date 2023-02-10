@@ -1,23 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { fetchWeather } from "./api";
+import "./App.css";
+import WeatherCard from "./Components/WeatherCard";
 
 function App() {
+  const [weather, setWeather] = useState("");
+  const [city, setCity] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const weather = await fetchWeather(city, setError);
+      console.log(weather);
+      setWeather(weather);
+    } catch (error) {
+      setError("City not found !!!");
+    }
+  };
+  const handleOnChange = (e) => {
+    setCity(e.target.value);
+  };
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1 className="app_heading">Weather App</h1>
+      <form onSubmit={handleSubmit}>
+        <input type="text" placeholder="Enter city" onChange={handleOnChange} />
+        <button type="submit">Search</button>
+      </form>
+      {error ? (
+        <p className="error">{error}</p>
+      ) : (
+        <WeatherCard weather={weather} />
+      )}
     </div>
   );
 }
